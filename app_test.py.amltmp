@@ -1,14 +1,25 @@
 import streamlit as st
+import requests
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
 import time
 
-# Initialize LLM once (not inside generate_response)
+# Set your FastAPI URL
+FASTAPI_URL ="https://ollama-testing-fastapi.onrender.com"
+
+# Initialize LLM once
 llm = OllamaLLM(model="mistral", temperature=0.8)
+
+def generate_response_from_fastapi(prompt):
+    """Send the prompt to FastAPI backend and get the response"""
+    response = requests.post(FASTAPI_URL, json={"question": prompt})
+    if response.status_code == 200:
+        return response.json()["answer"]
+    else:
+        return "Sorry, there was an issue processing your request. Please try again."
 
 def generate_response(prompt):
     """Generate appropriate response based on user input"""
-    
     normalized_prompt = prompt.lower().strip()
     
     # Casual conversation responses
@@ -21,22 +32,8 @@ def generate_response(prompt):
     if not normalized_prompt:
         return "Please share a wellness question so I can assist you. 🌼"
     
-    # Ayurvedic knowledge responses
-    template = """You are a warm, knowledgeable Ayurvedic practitioner. Respond to this query conversationally:
-    
-    User: {question}
-    
-    Answer in this format:
-    1. Start with a friendly, empathetic acknowledgment
-    2. Share relevant Ayurvedic wisdom in simple terms
-    3. Suggest practical remedies or lifestyle tips
-    4. End with an encouraging note
-    
-    Keep responses under 5 sentences unless detailed explanation is needed:"""
-    
-    prompt_template = ChatPromptTemplate.from_template(template)
-    chain = prompt_template | llm
-    return chain.invoke({"question": prompt})
+    # Send the prompt to the FastAPI server
+    return generate_response_from_fastapi(prompt)
 
 def main():
     st.set_page_config(
