@@ -9,7 +9,7 @@ llm = OllamaLLM(model="mistral", temperature=0.8)
 
 # Request body for the API
 class Query(BaseModel):
-    question: strs
+    question: str
 
 @app.post("/ask")
 async def ask_response(query: Query):
