@@ -1,22 +1,20 @@
 import streamlit as st
 import requests
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
 import time
 
 # Set your FastAPI URL
 FASTAPI_URL ="https://ollama-testing-fastapi.onrender.com"
 
-# Initialize LLM once
-llm = OllamaLLM(model="mistral", temperature=0.8)
 
 def generate_response_from_fastapi(prompt):
     """Send the prompt to FastAPI backend and get the response"""
-    response = requests.post(FASTAPI_URL, json={"question": prompt})
-    if response.status_code == 200:
-        return response.json()["answer"]
-    else:
-        return "Sorry, there was an issue processing your request. Please try again."
+    try:
+        response = requests.post(FASTAPI_URL + "/ask", json={"question": prompt})
+        response.raise_for_status()  # Will raise an HTTPError if the status code is not 200
+        return response.json().get("answer", "Sorry, something went wrong.")
+    except requests.exceptions.RequestException as e:
+        return f"Error: {e}"
 
 def generate_response(prompt):
     """Generate appropriate response based on user input"""

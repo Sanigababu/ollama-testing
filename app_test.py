@@ -1,14 +1,11 @@
 import streamlit as st
 import requests
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
 import time
 
 # Set your FastAPI URL
 FASTAPI_URL ="https://ollama-testing-fastapi.onrender.com"
 
-# Initialize LLM once
-llm = OllamaLLM(model="mistral", temperature=0.8)
 
 def generate_response_from_fastapi(prompt):
     """Send the prompt to FastAPI backend and get the response"""
