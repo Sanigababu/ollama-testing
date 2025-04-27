@@ -1,23 +1,8 @@
 import streamlit as st
-import requests
-from langchain_core.prompts import ChatPromptTemplate
 import time
 
-# Set your FastAPI URL
-FASTAPI_URL ="https://ollama-testing-fastapi.onrender.com"
-
-
-def generate_response_from_fastapi(prompt):
-    """Send the prompt to FastAPI backend and get the response"""
-    try:
-        response = requests.post(FASTAPI_URL + "/ask", json={"question": prompt})
-        response.raise_for_status()  # Will raise an HTTPError if the status code is not 200
-        return response.json().get("answer", "Sorry, something went wrong.")
-    except requests.exceptions.RequestException as e:
-        return f"Error: {e}"
-
-def generate_response(prompt):
-    """Generate appropriate response based on user input"""
+def generate_local_response(prompt):
+    """Generate a local response based on user input"""
     normalized_prompt = prompt.lower().strip()
     
     # Casual conversation responses
@@ -30,8 +15,12 @@ def generate_response(prompt):
     if not normalized_prompt:
         return "Please share a wellness question so I can assist you. 🌼"
     
-    # Send the prompt to the FastAPI server
-    return generate_response_from_fastapi(prompt)
+    # Simple placeholder for other wellness-related questions
+    return (
+        "That's a wonderful question! 🌿 In Ayurveda, each individual is unique, and balance is key. "
+        "For personalized advice, it's best to consider your dosha (body type) and consult an Ayurvedic expert. "
+        "Feel free to ask about remedies, herbs, yoga, or meditation too!"
+    )
 
 def main():
     st.set_page_config(
@@ -68,7 +57,7 @@ def main():
         with st.chat_message("assistant"):
             with st.spinner("Thinking... 🌿"):
                 time.sleep(1)  # simulate a natural delay
-                response = generate_response(prompt)
+                response = generate_local_response(prompt)
                 st.markdown(response)
         
         # Add assistant response to chat history
