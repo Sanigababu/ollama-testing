@@ -21,7 +21,7 @@ Keep responses under 5 sentences unless detailed explanation is needed:"""
 
         formatted_prompt = template.format(question=prompt)
 
-        response = requests.post(FASTAPI_URL, json={"question": formatted_prompt}, timeout=120)
+        response = requests.post(FASTAPI_URL, json={"question": formatted_prompt}, timeout=500)
         response.raise_for_status()
         data = response.json()
         return data.get("answer", "Sorry, I couldn't generate a response.")
