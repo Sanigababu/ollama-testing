@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import requests
 
-FASTAPI_URL = "https://ayushchatbot-ecdqhxg3dtgtefa4.eastus-01.azurewebsites.net/"
+FASTAPI_URL = "https://ayushchatbot-ecdqhxg3dtgtefa4.eastus-01.azurewebsites.net/ask"
 
 def generate_local_response(prompt):
     """Call the FastAPI server for a response"""
@@ -29,8 +29,6 @@ def generate_fallback_response(prompt, error=None):
 
     fallback = (
         "That's a wonderful question! 🌿 In Ayurveda, each individual is unique, and balance is key. "
-        "For personalized advice, it's best to consider your dosha (body type) and consult an Ayurvedic expert. "
-        "Feel free to ask about remedies, herbs, yoga, or meditation too!"
     )
 
     if error:
