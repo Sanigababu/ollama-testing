@@ -10,7 +10,7 @@ def generate_local_response(prompt):
         response = requests.post(FASTAPI_URL, json={"question": prompt}, timeout=120)
         response.raise_for_status()
         data = response.json()
-        return data.get("response", "Sorry, I couldn't generate a response.")
+        return data.get("answer", "Sorry, I couldn't generate a response.")
     except Exception as e:
         return generate_fallback_response(prompt, error=str(e))
 
