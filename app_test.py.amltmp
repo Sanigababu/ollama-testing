@@ -7,7 +7,7 @@ FASTAPI_URL = "https://ayushchatbot-ecdqhxg3dtgtefa4.eastus-01.azurewebsites.net
 def generate_local_response(prompt):
     """Call the FastAPI server for a response"""
     try:
-        response = requests.post(FASTAPI_URL, json={"question": prompt}, timeout=60)
+        response = requests.post(FASTAPI_URL, json={"question": prompt}, timeout=120)
         response.raise_for_status()
         data = response.json()
         return data.get("response", "Sorry, I couldn't generate a response.")
