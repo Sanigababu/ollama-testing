@@ -1,9 +1,21 @@
 import streamlit as st
 import time
+import requests
 
+FASTAPI_URL="https://ayushchatbot-ecdqhxg3dtgtefa4.eastus-01.azurewebsites.net/"
 def generate_local_response(prompt):
-    """Generate a local response based on user input"""
-    normalized_prompt = prompt.lower().strip()
+     """Call the FastAPI server for a response"""
+    try:
+        response = requests.post(
+            FASTAPI_URL,
+            json={"prompt": prompt},
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data.get("response", "Sorry, I couldn't generate a response.")
+    except Exception as e:
+        return f"Error: {e}"
     
     # Casual conversation responses
     if normalized_prompt in ["hi", "hello", "namaste", "hey"]:

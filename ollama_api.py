@@ -1,8 +1,7 @@
-# main.py (FastAPI)
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from langchain_ollama.llms import OllamaLLM
+import requests
 import logging
 import os
 
@@ -25,16 +24,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load the Ollama model
-try:
-    llm = OllamaLLM(
-        model="mistral",
-        temperature=0.8,
-        base_url=os.getenv("OLLAMA_URL", "http://localhost:11434")
-    )
-except Exception as e:
-    logger.error(f"Failed to initialize Ollama: {e}")
-    raise
+# URL for the Ollama model (Azure VM)
+OLLAMA_API_URL = os.getenv("OLLAMA_URL", "http://20.246.105.51:11434/api/generate")
 
 class Query(BaseModel):
     question: str
@@ -43,8 +34,22 @@ class Query(BaseModel):
 async def ask_response(query: Query):
     try:
         logger.info(f"Received question: {query.question}")
-        response = llm(query.question)
-        return {"answer": response}
+        
+        # Send the prompt to the Ollama model running on the Azure VM
+        response = requests.post(OLLAMA_API_URL, json={"prompt": query.question})
+        
+        # Check for a successful response
+        response.raise_for_status()  # This will raise an error for non-2xx status codes
+
+        # Assuming the Ollama model returns a JSON with a 'response' key
+        model_response = response.json()
+        answer = model_response.get("response", "No response from model.")
+
+        return {"answer": answer}
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error communicating with Ollama model: {e}")
+        raise HTTPException(status_code=500, detail=f"Error communicating with Ollama model: {e}")
     except Exception as e:
         logger.error(f"Error generating response: {e}")
         raise HTTPException(status_code=500, detail=str(e))
